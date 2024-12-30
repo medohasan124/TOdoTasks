@@ -61,7 +61,7 @@ class AuthController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json($validator->errors()->first(), 403);
+            return response()->json($validator->errors()->first(), 422);
         }
 
         $request->merge([
