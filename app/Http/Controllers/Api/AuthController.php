@@ -19,24 +19,32 @@ class AuthController extends Controller
             'password' => 'required' ,
         ]);
 
+
          if($validate->fails()){
-            return response()->json($validate->errors());
+            return response()->json($validate->errors() ,422);
          }
 
-        $credintial = auth()->attempt([
+
+
+        $credintial = Auth::attempt([
             'email' => $request->email,
-            'password' => $request->password
+            'password' => $request->password,
         ]);
 
 
+
+
         if($credintial){
+
              $user = auth()->user() ;
              $data['user'] = new UserResource($user);
              $data['token'] = $user->createToken('Token')->plainTextToken;
              return response()->json($data , 200);
         }else{
-         return response()->json([],1,__('auth.failed'));
+            return response()->json(['message' => 'Invalid credentials'], 401);
         }
+
+
 
     }
 
@@ -57,22 +65,26 @@ class AuthController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required',
             'email' => 'required|unique:users,email',
-            'password' => 'required',
+            'password' => 'required|min:6',
         ]);
 
+
+
         if ($validator->fails()) {
-            return response()->json($validator->errors()->first(), 422);
+
+            return response()->json(['message' =>$validator->errors()->first()], 422);
         }
+
+
 
         $request->merge([
             'password' => bcrypt($request->password),
         ]);
 
         $user = User::create($request->all());
-
         $data['user'] = new UserResource($user);
         $data['token'] = $user->createToken('registertoken')->plainTextToken;
-        return response()->json($data, 203);
+        return response()->json($data, 201);
     }
 }
 

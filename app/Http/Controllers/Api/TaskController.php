@@ -27,8 +27,6 @@ class TaskController extends Controller
     public function store(StoreTaskRequest $request)
     {
 
-
-
         $task = Tasks::create([
             'user_id' => auth()->user()->id,
             'title' => $request['title'],
